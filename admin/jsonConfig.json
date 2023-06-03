@@ -2,15 +2,10 @@
 	"i18n": true,
 	"type": "panel",
 	"items": {
-		"option1": {
-			"type": "checkbox",
-			"label": "option1",
-			"newLine": true
-		},
-		"option2": {
+		"userId": {
 			"type": "text",
-			"label": "option2",
-			"newLine": true
+			"label": "User-ID",
+			"newLine": false
 		}
 	}
 }
