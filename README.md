@@ -30,7 +30,7 @@ Adapter to integrate Data from Duolingo into the automation system
 
 MIT License
 
-Copyright (c) 2023 Børge Grunicke <boerge@grunicke.de>
+Copyright (c) 2023 Børge Grunicke
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
