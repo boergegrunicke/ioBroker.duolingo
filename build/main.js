@@ -42,24 +42,28 @@ class Duolingo extends utils.Adapter {
       const userResponse = await import_axios.default.get(`https://www.duolingo.com/users/${this.config.username}`, {
         headers: { "User-Agent": this.USER_AGENT, Authorization: `Bearer ${this.config.jwt}` }
       });
-      this.log.info("result : " + userResponse.status + " - " + userResponse.statusText);
       if (userResponse.status == 200) {
-        this.log.info("OK");
         const username = userResponse.data.username.toString().replace(".", "_");
         this.createStatesForUsername(username);
-        this.setState(`${username}.learning_language`, userResponse.data.learning_language_string);
-        this.setState(`${username}.email`, userResponse.data.learning_language_string);
-        this.setState(`${username}.fullname`, userResponse.data.fullname);
-        this.setState(`${username}.streak_extended_today`, userResponse.data.streak_extended_today);
-        this.setState(`${username}.daily_goal`, userResponse.data.daily_goal);
-        this.setState(`${username}.id`, userResponse.data.id);
-        this.setState(`${username}.streak`, userResponse.data.site_streak);
+        this.setState(`${username}.learning_language`, {
+          val: userResponse.data.learning_language_string,
+          ack: true
+        });
+        this.setState(`${username}.email`, { val: userResponse.data.learning_language_string, ack: true });
+        this.setState(`${username}.fullname`, { val: userResponse.data.fullname, ack: true });
+        this.setState(`${username}.streak_extended_today`, {
+          val: userResponse.data.streak_extended_today,
+          ack: true
+        });
+        this.setState(`${username}.daily_goal`, { val: userResponse.data.daily_goal, ack: true });
+        this.setState(`${username}.id`, { val: userResponse.data.id, ack: true });
+        this.setState(`${username}.streak`, { val: userResponse.data.site_streak, ack: true });
         this.log.info("calendar-elements : " + userResponse.data.calendar.length);
         const todayElements = userResponse.data.calendar.filter(
-          (element) => this.isTimestampFromToday(element.datetime)
+          (element) => this.isTimestampFromDay(element.datetime, 0)
         );
         const yesterdayElements = userResponse.data.calendar.filter(
-          (element) => this.isTimestampFromYesterday(element.datetime)
+          (element) => this.isTimestampFromDay(element.datetime, 1)
         );
         let todayPoints = 0;
         todayElements.forEach((element) => {
@@ -69,11 +73,10 @@ class Duolingo extends utils.Adapter {
         yesterdayElements.forEach((element) => {
           yesterdayPoints += element.improvement;
         });
-        this.setState(`${username}.today.exercises`, todayElements.length);
-        this.setState(`${username}.today.points`, todayPoints);
-        this.setState(`${username}.yesterday.exercises`, yesterdayElements.length);
-        this.setState(`${username}.yesterday.points`, yesterdayPoints);
-        this.log.info("is today today ? " + this.isTimestampFromToday(new Date().getTime()));
+        this.setState(`${username}.today.exercises`, { val: todayElements.length, ack: true });
+        this.setState(`${username}.today.points`, { val: todayPoints, ack: true });
+        this.setState(`${username}.yesterday.exercises`, { val: yesterdayElements.length, ack: true });
+        this.setState(`${username}.yesterday.points`, { val: yesterdayPoints, ack: true });
       }
     } catch (exception) {
       this.log.error("error : " + exception);
@@ -226,18 +229,10 @@ class Duolingo extends utils.Adapter {
       native: {}
     });
   }
-  isTimestampFromToday(timestamp) {
+  isTimestampFromDay(timestamp, correction) {
     const date = new Date(timestamp);
     const currentDate = new Date();
-    if (date.getFullYear() === currentDate.getFullYear() && date.getMonth() === currentDate.getMonth() && date.getDate() === currentDate.getDate()) {
-      return true;
-    }
-    return false;
-  }
-  isTimestampFromYesterday(timestamp) {
-    const date = new Date(timestamp);
-    const currentDate = new Date();
-    if (date.getFullYear() === currentDate.getFullYear() && date.getMonth() === currentDate.getMonth() && date.getDate() === currentDate.getDate() - 1) {
+    if (date.getFullYear() === currentDate.getFullYear() && date.getMonth() === currentDate.getMonth() && date.getDate() === currentDate.getDate() - correction) {
       return true;
     }
     return false;
