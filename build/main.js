@@ -30,14 +30,14 @@ class Duolingo extends utils.Adapter {
     this.on("unload", this.onUnload.bind(this));
   }
   async onReady() {
-    await this.createStates();
     try {
       const response = await import_axios.default.get("https://www.duolingo.com/api/1/version_info", {
         headers: { "User-Agent": this.USER_AGENT }
       });
       if (response.status == 200) {
-        this.setState("country", response.data.country);
-        this.setState("age_restriction_limit", response.data.age_restriction_limit);
+        await this.createStates();
+        this.setState("country", { val: response.data.country, ack: true });
+        this.setState("age_restriction_limit", { val: response.data.age_restriction_limit, ack: true });
       }
       const userResponse = await import_axios.default.get(`https://www.duolingo.com/users/${this.config.username}`, {
         headers: { "User-Agent": this.USER_AGENT, Authorization: `Bearer ${this.config.jwt}` }
@@ -58,7 +58,6 @@ class Duolingo extends utils.Adapter {
         this.setState(`${username}.daily_goal`, { val: userResponse.data.daily_goal, ack: true });
         this.setState(`${username}.id`, { val: userResponse.data.id, ack: true });
         this.setState(`${username}.streak`, { val: userResponse.data.site_streak, ack: true });
-        this.log.info("calendar-elements : " + userResponse.data.calendar.length);
         const todayElements = userResponse.data.calendar.filter(
           (element) => this.isTimestampFromDay(element.datetime, 0)
         );

@@ -29,15 +29,14 @@ class Duolingo extends utils.Adapter {
 	 * Is called when databases are connected and adapter received configuration.
 	 */
 	private async onReady(): Promise<void> {
-		await this.createStates();
-
 		try {
 			const response = await axios.get('https://www.duolingo.com/api/1/version_info', {
 				headers: { 'User-Agent': this.USER_AGENT },
 			});
 			if (response.status == 200) {
-				this.setState('country', response.data.country);
-				this.setState('age_restriction_limit', response.data.age_restriction_limit);
+				await this.createStates();
+				this.setState('country', { val: response.data.country, ack: true });
+				this.setState('age_restriction_limit', { val: response.data.age_restriction_limit, ack: true });
 			}
 			const userResponse = await axios.get(`https://www.duolingo.com/users/${this.config.username}`, {
 				headers: { 'User-Agent': this.USER_AGENT, Authorization: `Bearer ${this.config.jwt}` },
@@ -60,7 +59,6 @@ class Duolingo extends utils.Adapter {
 				this.setState(`${username}.id`, { val: userResponse.data.id, ack: true });
 				this.setState(`${username}.streak`, { val: userResponse.data.site_streak, ack: true });
 
-				this.log.info('calendar-elements : ' + userResponse.data.calendar.length);
 				const todayElements = userResponse.data.calendar.filter((element: CalendarElement) =>
 					this.isTimestampFromDay(element.datetime, 0),
 				);
