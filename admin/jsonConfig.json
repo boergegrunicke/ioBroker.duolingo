@@ -2,10 +2,21 @@
 	"i18n": true,
 	"type": "panel",
 	"items": {
-		"userId": {
+		"username": {
 			"type": "text",
-			"label": "User-ID",
+			"label": "Username",
+			"sm": 12,
+			"md": 12,
+			"lg": 6,
 			"newLine": false
+		},
+		"jwt": {
+			"type": "text",
+			"label": "JWT",
+			"sm": 12,
+			"md": 12,
+			"lg": 6,
+			"newLine": true
 		}
 	}
 }

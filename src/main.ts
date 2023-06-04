@@ -5,18 +5,21 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 import * as utils from '@iobroker/adapter-core';
+import axios from 'axios';
 
 // Load your modules here, e.g.:
 // import * as fs from "fs";
 
 class Duolingo extends utils.Adapter {
+	USER_AGENT =
+		'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36';
+
 	public constructor(options: Partial<utils.AdapterOptions> = {}) {
 		super({
 			...options,
 			name: 'duolingo',
 		});
 		this.on('ready', this.onReady.bind(this));
-		this.on('stateChange', this.onStateChange.bind(this));
 		// this.on('objectChange', this.onObjectChange.bind(this));
 		// this.on('message', this.onMessage.bind(this));
 		this.on('unload', this.onUnload.bind(this));
@@ -26,57 +29,250 @@ class Duolingo extends utils.Adapter {
 	 * Is called when databases are connected and adapter received configuration.
 	 */
 	private async onReady(): Promise<void> {
-		// Initialize your adapter here
+		await this.createStates();
+
+		try {
+			const response = await axios.get('https://www.duolingo.com/api/1/version_info', {
+				headers: { 'User-Agent': this.USER_AGENT },
+			});
+			if (response.status == 200) {
+				this.setState('country', response.data.country);
+				this.setState('age_restriction_limit', response.data.age_restriction_limit);
+			}
+			const userResponse = await axios.get(`https://www.duolingo.com/users/${this.config.username}`, {
+				headers: { 'User-Agent': this.USER_AGENT, Authorization: `Bearer ${this.config.jwt}` },
+			});
+			this.log.info('result : ' + userResponse.status + ' - ' + userResponse.statusText);
+			if (userResponse.status == 200) {
+				this.log.info('OK');
+				const username = userResponse.data.username.toString().replace('.', '_');
+				this.createStatesForUsername(username);
+
+				this.setState(`${username}.learning_language`, userResponse.data.learning_language_string);
+				this.setState(`${username}.email`, userResponse.data.learning_language_string);
+				this.setState(`${username}.fullname`, userResponse.data.fullname);
+				this.setState(`${username}.streak_extended_today`, userResponse.data.streak_extended_today);
+				this.setState(`${username}.daily_goal`, userResponse.data.daily_goal);
+				this.setState(`${username}.id`, userResponse.data.id);
+				this.setState(`${username}.streak`, userResponse.data.site_streak);
+
+				this.log.info('calendar-elements : ' + userResponse.data.calendar.length);
+				const todayElements = userResponse.data.calendar.filter((element) =>
+					this.isTimestampFromToday(element.datetime),
+				);
+				const yesterdayElements = userResponse.data.calendar.filter((element) =>
+					this.isTimestampFromYesterday(element.datetime),
+				);
+				let todayPoints = 0;
+				todayElements.forEach((element) => {
+					todayPoints += element.improvement;
+				});
+				let yesterdayPoints = 0;
+				yesterdayElements.forEach((element) => {
+					yesterdayPoints += element.improvement;
+				});
+
+				this.setState(`${username}.today.exercises`, todayElements.length);
+				this.setState(`${username}.today.points`, todayPoints);
+				this.setState(`${username}.yesterday.exercises`, yesterdayElements.length);
+				this.setState(`${username}.yesterday.points`, yesterdayPoints);
+
+				this.log.info('is today today ? ' + this.isTimestampFromToday(new Date().getTime()));
+			}
+		} catch (exception) {
+			this.log.error('error : ' + exception);
+		}
 
 		// The adapters config (in the instance object everything under the attribute "native") is accessible via
 		// this.config:
-		this.log.info('config option1: ' + this.config.option1);
-		this.log.info('config option2: ' + this.config.option2);
+		// this.config.userId
+	}
 
-		/*
-		For every state in the system there has to be also an object of type state
-		Here a simple template for a boolean variable named "testVariable"
-		Because every adapter instance uses its own unique namespace variable names can't collide with other adapters variables
-		*/
-		await this.setObjectNotExistsAsync('testVariable', {
+	private async createStates(): Promise<void> {
+		await this.setObjectNotExistsAsync('country', {
 			type: 'state',
 			common: {
-				name: 'testVariable',
-				type: 'boolean',
+				name: 'API-Country',
+				type: 'string',
 				role: 'indicator',
 				read: true,
-				write: true,
+				write: false,
 			},
 			native: {},
 		});
+		await this.setObjectNotExistsAsync('age_restriction_limit', {
+			type: 'state',
+			common: {
+				name: 'Age restriction limit',
+				type: 'number',
+				role: 'indicator',
+				read: true,
+				write: false,
+			},
+			native: {},
+		});
+	}
 
-		// In order to get state updates, you need to subscribe to them. The following line adds a subscription for our variable we have created above.
-		this.subscribeStates('testVariable');
-		// You can also add a subscription for multiple states. The following line watches all states starting with "lights."
-		// this.subscribeStates('lights.*');
-		// Or, if you really must, you can also watch all states. Don't do this if you don't need to. Otherwise this will cause a lot of unnecessary load on the system:
-		// this.subscribeStates('*');
+	private async createStatesForUsername(username: string): Promise<void> {
+		await this.setObjectNotExistsAsync(`${username}.learning_language`, {
+			type: 'state',
+			common: {
+				name: 'Learning language',
+				type: 'string',
+				role: 'indicator',
+				read: true,
+				write: false,
+			},
+			native: {},
+		});
+		await this.setObjectNotExistsAsync(`${username}.streak_extended_today`, {
+			type: 'state',
+			common: {
+				name: 'Streak extended todayy',
+				type: 'boolean',
+				role: 'indicator',
+				read: true,
+				write: false,
+			},
+			native: {},
+		});
+		await this.setObjectNotExistsAsync(`${username}.email`, {
+			type: 'state',
+			common: {
+				name: 'E-Mail',
+				type: 'string',
+				role: 'indicator',
+				read: true,
+				write: false,
+			},
+			native: {},
+		});
+		await this.setObjectNotExistsAsync(`${username}.fullname`, {
+			type: 'state',
+			common: {
+				name: 'Fullname',
+				type: 'string',
+				role: 'indicator',
+				read: true,
+				write: false,
+			},
+			native: {},
+		});
+		await this.setObjectNotExistsAsync(`${username}.daily_goal`, {
+			type: 'state',
+			common: {
+				name: 'Daily goal',
+				type: 'number',
+				role: 'indicator',
+				read: true,
+				write: false,
+			},
+			native: {},
+		});
+		await this.setObjectNotExistsAsync(`${username}.id`, {
+			type: 'state',
+			common: {
+				name: 'ID',
+				type: 'number',
+				role: 'indicator',
+				read: true,
+				write: false,
+			},
+			native: {},
+		});
+		await this.setObjectNotExistsAsync(`${username}.streak`, {
+			type: 'state',
+			common: {
+				name: 'Streak',
+				type: 'number',
+				role: 'indicator',
+				read: true,
+				write: false,
+			},
+			native: {},
+		});
+		await this.setObjectNotExistsAsync(`${username}.today.exercises`, {
+			type: 'state',
+			common: {
+				name: 'Exercises today',
+				type: 'number',
+				role: 'indicator',
+				read: true,
+				write: false,
+			},
+			native: {},
+		});
+		await this.setObjectNotExistsAsync(`${username}.today.points`, {
+			type: 'state',
+			common: {
+				name: 'Points today',
+				type: 'number',
+				role: 'indicator',
+				read: true,
+				write: false,
+			},
+			native: {},
+		});
+		await this.setObjectNotExistsAsync(`${username}.yesterday.exercises`, {
+			type: 'state',
+			common: {
+				name: 'Exercises yesterday',
+				type: 'number',
+				role: 'indicator',
+				read: true,
+				write: false,
+			},
+			native: {},
+		});
+		await this.setObjectNotExistsAsync(`${username}.yesterday.points`, {
+			type: 'state',
+			common: {
+				name: 'Points yesterday',
+				type: 'number',
+				role: 'indicator',
+				read: true,
+				write: false,
+			},
+			native: {},
+		});
+	}
 
-		/*
-			setState examples
-			you will notice that each setState will cause the stateChange event to fire (because of above subscribeStates cmd)
-		*/
-		// the variable testVariable is set to true as command (ack=false)
-		await this.setStateAsync('testVariable', true);
+	private isTimestampFromToday(timestamp: number): boolean {
+		// Create a Date object from the timestamp
+		const date = new Date(timestamp);
 
-		// same thing, but the value is flagged "ack"
-		// ack should be always set to true if the value is received from or acknowledged from the target system
-		await this.setStateAsync('testVariable', { val: true, ack: true });
+		// Get the current date
+		const currentDate = new Date();
 
-		// same thing, but the state is deleted after 30s (getState will return null afterwards)
-		await this.setStateAsync('testVariable', { val: true, ack: true, expire: 30 });
+		// Compare the year, month, and day of the two dates
+		if (
+			date.getFullYear() === currentDate.getFullYear() &&
+			date.getMonth() === currentDate.getMonth() &&
+			date.getDate() === currentDate.getDate()
+		) {
+			return true; // The timestamp is from today
+		}
 
-		// examples for the checkPassword/checkGroup functions
-		let result = await this.checkPasswordAsync('admin', 'iobroker');
-		this.log.info('check user admin pw iobroker: ' + result);
+		return false; // The timestamp is not from today
+	}
 
-		result = await this.checkGroupAsync('admin', 'admin');
-		this.log.info('check group user admin group admin: ' + result);
+	private isTimestampFromYesterday(timestamp: number): boolean {
+		// Create a Date object from the timestamp
+		const date = new Date(timestamp);
+
+		// Get the current date
+		const currentDate = new Date();
+
+		// Compare the year, month, and day of the two dates
+		if (
+			date.getFullYear() === currentDate.getFullYear() &&
+			date.getMonth() === currentDate.getMonth() &&
+			date.getDate() === currentDate.getDate() - 1
+		) {
+			return true; // The timestamp is from today
+		}
+
+		return false; // The timestamp is not from today
 	}
 
 	/**
@@ -110,19 +306,6 @@ class Duolingo extends utils.Adapter {
 	// 		this.log.info(`object ${id} deleted`);
 	// 	}
 	// }
-
-	/**
-	 * Is called if a subscribed state changes
-	 */
-	private onStateChange(id: string, state: ioBroker.State | null | undefined): void {
-		if (state) {
-			// The state was changed
-			this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
-		} else {
-			// The state was deleted
-			this.log.info(`state ${id} deleted`);
-		}
-	}
 
 	// If you need to accept messages in your adapter, uncomment the following block and the corresponding line in the constructor.
 	// /**

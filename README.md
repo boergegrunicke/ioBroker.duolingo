@@ -14,6 +14,7 @@
 ## duolingo adapter for ioBroker
 
 Adapter to integrate Data from Duolingo into the automation system
+For now, unfortunately the authentication token must be inserted manually. sorry!
 
 ## Changelog
 
@@ -25,6 +26,7 @@ Adapter to integrate Data from Duolingo into the automation system
 ### **WORK IN PROGRESS**
 
 -   (Børge Grunicke) initial release
+-   (Børge Grunicke) reading first basic information and writing them to the objects
 
 ## License
 
