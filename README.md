@@ -22,8 +22,7 @@ For now, unfortunately the authentication token must be inserted manually. sorry
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-
-### **WORK IN PROGRESS**
+### 0.0.2 (2023-06-19)
 
 -   (Børge Grunicke) initial release
 -   (Børge Grunicke) reading first basic information and writing them to the objects

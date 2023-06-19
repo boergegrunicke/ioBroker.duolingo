@@ -1,83 +1,101 @@
 {
-	"common": {
-		"name": "duolingo",
-		"version": "0.0.1",
-		"news": {
-			"0.0.1": {
-				"en": "initial release",
-				"de": "Erstveröffentlichung",
-				"ru": "Начальная версия",
-				"pt": "lançamento inicial",
-				"nl": "Eerste uitgave",
-				"fr": "Première version",
-				"it": "Versione iniziale",
-				"es": "Versión inicial",
-				"pl": "Pierwsze wydanie",
-				"uk": "Початкова версія",
-				"zh-cn": "首次出版"
-			}
-		},
-		"title": "Duolingo",
-		"titleLang": {
-			"en": "Duolingo",
-			"de": "Duolingo",
-			"ru": "Дуолинго",
-			"pt": "Duolingo",
-			"nl": "Duolingo",
-			"fr": "Duolingo",
-			"it": "Duolingo",
-			"es": "Duolingo",
-			"pl": "Duolingo",
-			"uk": "Duolingo",
-			"zh-cn": "多邻国"
-		},
-		"desc": {
-			"en": "Adapter to integrate Data from Duolingo into the automation system",
-			"de": "Adapter zur Integration von Daten von Duolingo in das Automatisierungssystem",
-			"ru": "Адаптер для интеграции Данных из Duolingo в систему автоматизации",
-			"pt": "Adaptador para integrar dados do Duolingo no sistema de automação",
-			"nl": "Adapter om Data van Duolingo te integreren in het automatiseringssysteem",
-			"fr": "Adaptateur pour intégrer les données de Duolingo dans le système d'automatisation",
-			"it": "Adattatore per integrare i dati di Duolingo nel sistema di automazione",
-			"es": "Adaptador para integrar datos de Duolingo en el sistema de automatización",
-			"pl": "Adapter do integracji danych z Duolingo z systemem automatyki",
-			"uk": "Адаптер для інтеграції даних з Duolingo в систему автоматизації",
-			"zh-cn": "将 Duolingo 中的数据集成到自动化系统中的适配器"
-		},
-		"authors": ["Børge Grunicke <boerge@grunicke.de>"],
-		"keywords": ["duolingo", "language"],
-		"license": "MIT",
-		"platform": "Javascript/Node.js",
-		"main": "build/main.js",
-		"icon": "duolingo.png",
-		"enabled": true,
-		"extIcon": "https://raw.githubusercontent.com/boergegrunicke/ioBroker.duolingo/main/admin/duolingo.png",
-		"readme": "https://github.com/boergegrunicke/ioBroker.duolingo/blob/main/README.md",
-		"loglevel": "info",
-		"mode": "schedule",
-		"allowInit": true,
-		"type": "communication",
-		"compact": true,
-		"connectionType": "cloud",
-		"dataSource": "poll",
-		"adminUI": {
-			"config": "json"
-		},
-		"dependencies": [
-			{
-				"js-controller": ">=3.3.22"
-			}
-		],
-		"globalDependencies": [
-			{
-				"admin": ">=5.1.13"
-			}
-		]
-	},
-	"native": {
-		"username": "",
-		"jwt": ""
-	},
-	"objects": [],
-	"instanceObjects": []
+  "common": {
+    "name": "duolingo",
+    "version": "0.0.2",
+    "news": {
+      "0.0.2": {
+        "en": "(Børge Grunicke) initial release\n(Børge Grunicke) reading first basic information and writing them to the objects",
+        "de": "(Børge Grunicke) erste Veröffentlichung\n(Børge Grunicke) erste grundlegende Informationen lesen und an die Objekte schreiben",
+        "ru": "(Børge Grunicke) начальный релиз\n(Børge Grunicke) читать первую основную информацию и писать их на объекты",
+        "pt": "(Børge Grunicke) lançamento inicial\n(Børge Grunicke) lendo as primeiras informações básicas e escrevendo-as para os objetos",
+        "nl": "Eerste vrijlating\nLezen eerste basis informatie en schrijven ze aan de objecten",
+        "fr": "(Børge Grunicke) sortie initiale\n(Børge Grunicke) lisant les premières informations de base et les écrivant aux objets",
+        "it": "(Børge Grunicke) rilascio iniziale\n(Børge Grunicke) leggendo le prime informazioni di base e scrivendole agli oggetti",
+        "es": "(Børge Grunicke) versión inicial\n(Børge Grunicke) leer la primera información básica y escribirlos a los objetos",
+        "pl": "(Børge Grunicke) – pierwsze wydanie\n(Børge Grunicke) czyta pierwsze podstawowe informacje i zapisuje je do obiektów",
+        "uk": "(Børge Grunicke) початковий реліз\n(Børge Grunicke) читання першої базової інформації та написання їх на об'єкти",
+        "zh-cn": "(Børge Grunicke) 初步释放\n(Børge Grunicke) 阅读了第一基本资料,并将它们写成物体"
+      },
+      "0.0.1": {
+        "en": "initial release",
+        "de": "Erstveröffentlichung",
+        "ru": "Начальная версия",
+        "pt": "lançamento inicial",
+        "nl": "Eerste uitgave",
+        "fr": "Première version",
+        "it": "Versione iniziale",
+        "es": "Versión inicial",
+        "pl": "Pierwsze wydanie",
+        "uk": "Початкова версія",
+        "zh-cn": "首次出版"
+      }
+    },
+    "title": "Duolingo",
+    "titleLang": {
+      "en": "Duolingo",
+      "de": "Duolingo",
+      "ru": "Дуолинго",
+      "pt": "Duolingo",
+      "nl": "Duolingo",
+      "fr": "Duolingo",
+      "it": "Duolingo",
+      "es": "Duolingo",
+      "pl": "Duolingo",
+      "uk": "Duolingo",
+      "zh-cn": "多邻国"
+    },
+    "desc": {
+      "en": "Adapter to integrate Data from Duolingo into the automation system",
+      "de": "Adapter zur Integration von Daten von Duolingo in das Automatisierungssystem",
+      "ru": "Адаптер для интеграции Данных из Duolingo в систему автоматизации",
+      "pt": "Adaptador para integrar dados do Duolingo no sistema de automação",
+      "nl": "Adapter om Data van Duolingo te integreren in het automatiseringssysteem",
+      "fr": "Adaptateur pour intégrer les données de Duolingo dans le système d'automatisation",
+      "it": "Adattatore per integrare i dati di Duolingo nel sistema di automazione",
+      "es": "Adaptador para integrar datos de Duolingo en el sistema de automatización",
+      "pl": "Adapter do integracji danych z Duolingo z systemem automatyki",
+      "uk": "Адаптер для інтеграції даних з Duolingo в систему автоматизації",
+      "zh-cn": "将 Duolingo 中的数据集成到自动化系统中的适配器"
+    },
+    "authors": [
+      "Børge Grunicke <boerge@grunicke.de>"
+    ],
+    "keywords": [
+      "duolingo",
+      "language"
+    ],
+    "license": "MIT",
+    "platform": "Javascript/Node.js",
+    "main": "build/main.js",
+    "icon": "duolingo.png",
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/boergegrunicke/ioBroker.duolingo/main/admin/duolingo.png",
+    "readme": "https://github.com/boergegrunicke/ioBroker.duolingo/blob/main/README.md",
+    "loglevel": "info",
+    "mode": "schedule",
+    "allowInit": true,
+    "type": "communication",
+    "compact": true,
+    "connectionType": "cloud",
+    "dataSource": "poll",
+    "adminUI": {
+      "config": "json"
+    },
+    "dependencies": [
+      {
+        "js-controller": ">=3.3.22"
+      }
+    ],
+    "globalDependencies": [
+      {
+        "admin": ">=5.1.13"
+      }
+    ]
+  },
+  "native": {
+    "username": "",
+    "jwt": ""
+  },
+  "objects": [],
+  "instanceObjects": []
 }
