@@ -49,7 +49,7 @@ class Duolingo extends utils.Adapter {
 					val: userResponse.data.learning_language_string,
 					ack: true,
 				});
-				this.setState(`${username}.email`, { val: userResponse.data.learning_language_string, ack: true });
+				this.setState(`${username}.email`, { val: userResponse.data.email, ack: true });
 				this.setState(`${username}.fullname`, { val: userResponse.data.fullname, ack: true });
 				this.setState(`${username}.streak_extended_today`, {
 					val: userResponse.data.streak_extended_today,
