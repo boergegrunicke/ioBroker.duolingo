@@ -22,8 +22,7 @@ For now, unfortunately the authentication token must be inserted manually. sorry
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-
-### **WORK IN PROGRESS**
+### 0.0.3 (2023-06-22)
 
 -   correct data
 

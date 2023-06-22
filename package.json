@@ -1,6 +1,6 @@
 {
   "name": "iobroker.duolingo",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Adapter to integrate Data from Duolingo into the automation system",
   "author": {
     "name": "Børge Grunicke",
